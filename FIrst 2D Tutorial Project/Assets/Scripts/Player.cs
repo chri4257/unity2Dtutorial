@@ -4,8 +4,20 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 
-	// This defines we are using a Rigidbody
-	private Rigidbody2D myRigidbody;
+	private static Player instance;
+	// Some weird instance thing
+	public static Player Instance
+	{
+		get
+		{
+			if (instance == null)
+			{
+				// Can't use if there are multiple players as this finds single object
+				instance = GameObject.FindObjectOfType<Player>();
+			}
+			return instance;
+		}
+	}
 
 	// Define the correct animator
 	private Animator myAnimator;
@@ -15,8 +27,6 @@ public class Player : MonoBehaviour {
 	[SerializeField]
 	private float movementSpeed;
 
-	private bool attack;
-	private bool slide;
 	private bool facingRight;
 
 	// We select groundPoints from the Unity inspector
@@ -29,23 +39,31 @@ public class Player : MonoBehaviour {
 	// We can assing in the inspector to what is ground
 	[SerializeField]
 	private LayerMask whatIsGround;
-	private bool isGrounded;
-	// Jumping variables
-	private bool jump;
+
+
 	[SerializeField]
 	private float jumpForce;
 	// AirControl allows us to move whilst in the air
 	[SerializeField]
 	private bool airControl;
 
-	private bool jumpAttack;
+	// This defines we are using a Rigidbody
+	public Rigidbody2D MyRigidbody { get; set; }
+
+	public bool Attack { get; set; }
+	public bool Slide { get; set; }
+	public bool Jump { get; set; }
+	public bool OnGround { get; set; }
+
+
+
 
 	// Use this for initialization
 	void Start () {
 		// Initially facing right
 		facingRight = true;
 		// This means that we set the rigidbody equal to the correct ones (i.e. the player that we run this script on) This basically gets the right reference for the correct rigidbody
-		myRigidbody = GetComponent<Rigidbody2D>();
+		MyRigidbody = GetComponent<Rigidbody2D>();
 		// Get correct Animator
 		myAnimator = GetComponent<Animator>();
 	}
@@ -62,19 +80,17 @@ public class Player : MonoBehaviour {
 			// Just to test it is working
 			//Debug.Log(horizontal);
 			// See if we are grounded
-			isGrounded = IsGrounded();
+			OnGround = IsGrounded();
 			// This runs the movement function
 			HandleMovement(horizontal);
-			// Runs the attack function
-			HandleAttacks();
+
 			// Handle animation Layers
 			HandleLayers();
 			// Test if we need to Flip
 			Flip(horizontal);
 
 
-			// Resets all values to their defaults
-			ResetValues();
+
 	}
 
 	// This handles inputs to player
@@ -83,18 +99,17 @@ public class Player : MonoBehaviour {
 		// Jumping
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
-			jump = true;
+			myAnimator.SetTrigger("jump");
 		}
 		// If you hold down LeftShift then you attack
 		if (Input.GetKeyDown(KeyCode.LeftShift))
 		{
-			attack = true;
-			jumpAttack = true;
+			myAnimator.SetTrigger("attack");
 		}
 		// Slide inputs
 		if (Input.GetKeyDown(KeyCode.LeftControl))
 		{
-			slide= true;
+			myAnimator.SetTrigger("slide");
 		}
 	}
 
@@ -102,67 +117,24 @@ public class Player : MonoBehaviour {
 	// This is a function for player movement
 	private void HandleMovement(float horizontal)
 	{
+
 		// If we are falling then start the landing animation
-		if (myRigidbody.velocity.y < 0)
+		if (MyRigidbody.velocity.y < 0)
 		{
 			myAnimator.SetBool("land", true);
 		}
-	//	else if (myRigidbody.velocity.y >= 0) {
-	//		myAnimator.SetBool("land", false);
-	//	}
-		// If NOT current animation in layer 0 (base layer) has the tag AttackTag (which we input as tag in Unity by clicking on attack in the Animator)
-		// Basically if we arn't attacking then we can move. If we are attacking gotta stay still
-		// We also need to be not sliding currently in order to change direction
-		// And it requires us to be grounded, or have aircontrol switched on (which means we can move whilst in the air)
-		if (!myAnimator.GetBool("slide") && !this.myAnimator.GetCurrentAnimatorStateInfo(0).IsTag("AttackTag") && (isGrounded || airControl))
+		// Horizontal movement
+		if (!Attack && !Slide && (OnGround || airControl))
 		{
-			// We set the velocity of the player here to be left or right
-			myRigidbody.velocity = new Vector2(movementSpeed * horizontal, myRigidbody.velocity.y);
+			MyRigidbody.velocity = new Vector2(movementSpeed * horizontal, MyRigidbody.velocity.y);
 		}
-
-		// Jumping
-		if (isGrounded && jump)
+		if (Jump && MyRigidbody.velocity.y == 0)
 		{
-			isGrounded = false;
-			myRigidbody.AddForce(new Vector2(0, jumpForce));
-			// jump animation
-			myAnimator.SetTrigger("jump");
+			MyRigidbody.AddForce(new Vector2(0, jumpForce));
 		}
-
-		// If slide = true and player not currently in slide animation then lets enable slide animation
-		if (slide && !this.myAnimator.GetCurrentAnimatorStateInfo(0).IsTag("SlideTag"))
-		{
-			myAnimator.SetBool("slide", true);
-		}
-		// If we are not sliding then let's stop the sliding animation happening
-		else if (!this.myAnimator.GetCurrentAnimatorStateInfo(0).IsTag("SlideTag"))
-		{
-			myAnimator.SetBool("slide", false);
-		}
-
-		// Sets the parameter "speed" in the animator to the absolute speed
+		// Set the speed in the Animator
 		myAnimator.SetFloat("speed", Mathf.Abs(horizontal));
 	}
-
-	private void HandleAttacks()
-	{
-		// If attack and you not attacking already and not in air
-		if (attack && isGrounded && !this.myAnimator.GetCurrentAnimatorStateInfo(0).IsTag("AttackTag"))	{
-			// Sets the attack trigger which forces attack animation
-			myAnimator.SetTrigger("attack");
-			// Set velocity to 0 when you attacking
-			myRigidbody.velocity = new Vector2(0, myRigidbody.velocity.y);
-		}
-		if (jumpAttack && !isGrounded && !this.myAnimator.GetCurrentAnimatorStateInfo(1).IsName("JumpAttackTag"))
-		{
-			myAnimator.SetBool("jumpAttack", true);
-		}
-		if (!jumpAttack && !this.myAnimator.GetCurrentAnimatorStateInfo(1).IsName("JumpAttackTag"))
-		{
-			myAnimator.SetBool("jumpAttack", false);
-		}
-	}
-
 
 
 	// FLips the player from left to right
@@ -183,7 +155,7 @@ public class Player : MonoBehaviour {
 	private bool IsGrounded()
 	{
 		// If we are not moving upwards
-		if (myRigidbody.velocity.y <= 0)
+		if (MyRigidbody.velocity.y <= 0)
 		{
 			// For each groundpoint we have
 			foreach (Transform point in groundPoints)
@@ -195,9 +167,6 @@ public class Player : MonoBehaviour {
 					// This checks that the collider we are looking at isn't the player itself
 					if (colliders[i].gameObject != gameObject)
 					{
-						// Reset the jump trigger and turn off landing animation
-						myAnimator.ResetTrigger("jump");
-						myAnimator.SetBool("land", false);
 						return true;
 					}
 				}
@@ -211,7 +180,7 @@ public class Player : MonoBehaviour {
 	private void HandleLayers()
 	{
 		// If not grounded then start using layer 1 = air layer
-		if (!isGrounded)
+		if (!OnGround)
 		{
 			myAnimator.SetLayerWeight(1, 1);
 		}
@@ -221,13 +190,6 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	// Resets parameters to inital vlaues
-	private void ResetValues()
-	{
-		attack = false;
-		slide = false;
-		jump = false;
-		jumpAttack = false;
-	}
+
 
 }
