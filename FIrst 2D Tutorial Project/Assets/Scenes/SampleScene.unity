@@ -2219,6 +2219,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   knifePosition: {fileID: 2101044517}
   movementSpeed: 5
+  knifePrefab: {fileID: 1548597427087256, guid: ed777be0a1192c54ea2cbb1136258ce7,
+    type: 2}
   groundPoints:
   - {fileID: 222348861}
   - {fileID: 169127153}
@@ -2228,8 +2230,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   jumpForce: 400
-  knifePrefab: {fileID: 1548597427087256, guid: ed777be0a1192c54ea2cbb1136258ce7,
-    type: 2}
   airControl: 1
 --- !u!61 &1877736231
 BoxCollider2D:
