@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// This class allows player to jump onto platforms from below them
 public class CollisionTrigger : MonoBehaviour {
 
 	private BoxCollider2D playerCollider;
@@ -38,8 +40,5 @@ public class CollisionTrigger : MonoBehaviour {
 		}
 	}
 
-	// Update is called once per frame
-	void Update () {
 
-	}
 }

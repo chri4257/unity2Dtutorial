@@ -7,9 +7,7 @@ using UnityEngine;
 // can only add player, or enemy script to an object, but they inherit this class
 public abstract class Character : MonoBehaviour {
 
-	// Define the correct animator
-	// Protected means can access in any script whichi inherits this class
-	protected Animator myAnimator;
+
 
 	[SerializeField]
 	protected Transform knifePosition;
@@ -29,6 +27,9 @@ public abstract class Character : MonoBehaviour {
 	public bool Attack { get; set; }
 	public bool Throw { get; set; }
 
+	// Public property so we can access for the enemy states
+	// Can't set from outside (so we used private set)
+	public Animator MyAnimator { get; private set; }
 
 	// Use this for initialization
 	// virtual means it can be overwritten
@@ -37,7 +38,7 @@ public abstract class Character : MonoBehaviour {
 		// Initially facing right
 		facingRight = true;
 		// Get correct Animator
-		myAnimator = GetComponent<Animator>();
+		MyAnimator = GetComponent<Animator>();
 	}
 
 	// Update is called once per frame

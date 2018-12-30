@@ -99,21 +99,21 @@ public class Player : Character {
 		// Jumping
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
-			myAnimator.SetTrigger("jump");
+			MyAnimator.SetTrigger("jump");
 		}
 		// If you hold down LeftShift then you attack
 		if (Input.GetKeyDown(KeyCode.LeftShift))
 		{
-			myAnimator.SetTrigger("attack");
+			MyAnimator.SetTrigger("attack");
 		}
 		// Slide inputs
 		if (Input.GetKeyDown(KeyCode.LeftControl))
 		{
-			myAnimator.SetTrigger("slide");
+			MyAnimator.SetTrigger("slide");
 		}
 		if (Input.GetKeyDown(KeyCode.V))
 		{
-			myAnimator.SetTrigger("throw");
+			MyAnimator.SetTrigger("throw");
 		}
 	}
 
@@ -125,7 +125,7 @@ public class Player : Character {
 		// If we are falling then start the landing animation
 		if (MyRigidbody.velocity.y < 0)
 		{
-			myAnimator.SetBool("land", true);
+			MyAnimator.SetBool("land", true);
 		}
 		// Horizontal movement
 		if (!Attack && !Slide && (OnGround || airControl))
@@ -137,7 +137,7 @@ public class Player : Character {
 			MyRigidbody.AddForce(new Vector2(0, jumpForce));
 		}
 		// Set the speed in the Animator
-		myAnimator.SetFloat("speed", Mathf.Abs(horizontal));
+		MyAnimator.SetFloat("speed", Mathf.Abs(horizontal));
 	}
 
 	// FLips the player from left to right
@@ -180,11 +180,11 @@ public class Player : Character {
 		// If not grounded then start using layer 1 = air layer
 		if (!OnGround)
 		{
-			myAnimator.SetLayerWeight(1, 1);
+			MyAnimator.SetLayerWeight(1, 1);
 		}
 		else
 		{
-			myAnimator.SetLayerWeight(1, 0);
+			MyAnimator.SetLayerWeight(1, 0);
 		}
 	}
 
