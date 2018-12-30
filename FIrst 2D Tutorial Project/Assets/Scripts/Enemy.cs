@@ -12,6 +12,38 @@ public class Enemy : Character {
 	// We set this property in the EnemySight.cs script. (The target is the player if the enemy sees the player)
 	public GameObject Target { get; set; }
 
+	[SerializeField]
+	private float meleeRange;
+
+	public bool InMeleeRange
+	{
+		get
+		{
+			if (Target !=null)
+			{
+				// If enemy position is within meleeRange of the target then returns true
+				return (Vector2.Distance(transform.position, Target.transform.position) <= meleeRange);
+			}
+			return false;
+		}
+	}
+
+	[SerializeField]
+	private float throwRange;
+
+	public bool InThrowRange
+	{
+		get
+		{
+			if (Target !=null)
+			{
+				// If enemy position is within meleeRange of the target then returns true
+				return (Vector2.Distance(transform.position, Target.transform.position) <= throwRange);
+			}
+			return false;
+		}
+	}
+
 	// Use this for initialization
 	public override void Start () {
 		// Make sure base charecter start function runs too

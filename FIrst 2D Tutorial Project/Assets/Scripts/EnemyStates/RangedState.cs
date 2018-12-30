@@ -14,12 +14,20 @@ public class RangedState : IEnemyState {
 	public void Enter(Enemy enemy)
 	{
 		this.enemy = enemy;
+		canThrow = true;
 	}
 
 	public void Execute()
 	{
+
+		ThrowKnife();
+
+		if (enemy.InMeleeRange)
+		{
+			enemy.ChangeState(new MeleeState());
+		}
 		// If we have a target then
-		if (enemy.Target != null)
+		else if (enemy.Target != null)
 		{
 			enemy.Move();
 		}
@@ -29,7 +37,7 @@ public class RangedState : IEnemyState {
 			enemy.ChangeState(new IdleState());
 		}
 
-		ThrowKnife();
+
 
 	}
 

@@ -21,8 +21,8 @@ public class PatrolState : IEnemyState {
 		Patrol();
 		// Move the enemy object
 		enemy.Move();
-
-		if (enemy.Target != null)
+		// If we have a target and they within throw range then change to ranged state
+		if (enemy.Target != null && enemy.InThrowRange)
 		{
 			enemy.ChangeState(new RangedState());
 		}
