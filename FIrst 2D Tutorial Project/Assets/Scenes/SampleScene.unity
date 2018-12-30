@@ -1265,7 +1265,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   knifePosition: {fileID: 0}
-  movementSpeed: 4
+  movementSpeed: 1
   knifePrefab: {fileID: 0}
 --- !u!61 &904017092
 BoxCollider2D:

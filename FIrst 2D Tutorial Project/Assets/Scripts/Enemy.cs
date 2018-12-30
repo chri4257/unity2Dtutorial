@@ -67,10 +67,14 @@ public class Enemy : Character {
 	// Function to allow charecter to move
 	public void Move()
 	{
+		if (!Attack)
+		{
+			// Time.deltaTime means it takes time into account depending on framerate of device
+			transform.Translate(GetDirection() * movementSpeed * Time.deltaTime);
+		}
 		// Starts run animation
 		MyAnimator.SetFloat("speed", 1);
-		// Time.deltaTime means it takes time into account depending on framerate of device
-		transform.Translate(GetDirection() * movementSpeed * Time.deltaTime);
+
 	}
 
 	public Vector2 GetDirection()
