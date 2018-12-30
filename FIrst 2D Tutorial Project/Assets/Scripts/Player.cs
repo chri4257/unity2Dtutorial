@@ -21,6 +21,10 @@ public class Player : MonoBehaviour {
 
 	// Define the correct animator
 	private Animator myAnimator;
+
+	[SerializeField]
+	private Transform knifePosition;
+
 	// Define Speed
 	// Private means can't access from other scripts
 	// Serialized will make it appear in Unity
@@ -43,6 +47,11 @@ public class Player : MonoBehaviour {
 
 	[SerializeField]
 	private float jumpForce;
+
+	// Knife prefab
+	[SerializeField]
+	private GameObject knifePrefab;
+
 	// AirControl allows us to move whilst in the air
 	[SerializeField]
 	private bool airControl;
@@ -54,7 +63,7 @@ public class Player : MonoBehaviour {
 	public bool Slide { get; set; }
 	public bool Jump { get; set; }
 	public bool OnGround { get; set; }
-
+	public bool Throw { get; set; }
 
 
 
@@ -110,6 +119,10 @@ public class Player : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.LeftControl))
 		{
 			myAnimator.SetTrigger("slide");
+		}
+		if (Input.GetKeyDown(KeyCode.V))
+		{
+			myAnimator.SetTrigger("throw");
 		}
 	}
 
@@ -190,6 +203,29 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+	// Throw Knife
+	public void ThrowKnife(int value)
+	{
+		// value 1 = in the air, value 0 = on the ground
+		// remember both animation layers run at the same time, so it would make two layers if we didn't stop it
+		if (!OnGround && value == 1 || OnGround && value == 0)
+		{
+			if (facingRight)
+			{
+				// Create an instance of knife prefab. At the correct knife position. Rotated in correct direction
+				// This instance is called tmp
+				GameObject tmp = (GameObject)Instantiate(knifePrefab, knifePosition.position, Quaternion.Euler(new Vector3(0, 0, -90)));
+			  // We then look at the tmp instance and look at script Knife.cs and find the Intialize public function. We feed this Initialize a right Vector
+				tmp.GetComponent<Knife>().Initialize(Vector2.right);
+			}
+			else
+			{
+				GameObject tmp = (GameObject)Instantiate(knifePrefab, knifePosition.position , Quaternion.Euler(new Vector3(0, 0, 90)));
+				tmp.GetComponent<Knife>().Initialize(Vector2.left);
+			}
+		}
+
+	}
 
 
 }
